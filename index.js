@@ -1,14 +1,34 @@
-    var http = require('http');
+var restify = require('restify');
+var builder = require('botbuilder');
 
-    var server = http.createServer(function(request, response) {
+// Get secrets from server environment
+var botConnectorOptions = { 
+    appId: process.env.BOTFRAMEWORK_APPID, 
+    appPassword: process.env.BOTFRAMEWORK_APPSECRET
+};
 
-        response.writeHead(200, {"Content-Type": "text/plain"});
-        response.end("Hello World!");
+// Create bot
+var connector = new builder.ChatConnector(botConnectorOptions);
+var bot = new builder.UniversalBot(connector);
 
-    });
+bot.dialog('/', function (session) {
+    
+    //respond with user's message
+    session.send("You said " + session.message.text);
+});
 
-    var port = process.env.PORT || 1337;
-    server.listen(port);
+// Setup Restify Server
+var server = restify.createServer();
 
+// Handle Bot Framework messages
+server.post('/api/messages', connector.listen());
 
-console.log("Server running at http://localhost:%d", port);
+// Serve a static web page
+server.get(/.*/, restify.serveStatic({
+	'directory': '.',
+	'default': 'index.html'
+}));
+
+server.listen(process.env.port || 3978, function () {
+    console.log('%s listening to %s', server.name, server.url); 
+});
