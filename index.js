@@ -21,7 +21,11 @@ bot.dialog('/', function (session) {
 var server = restify.createServer();
 
 // Handle Bot Framework messages
-server.post('/api/messages', connector.listen());
+server.post('/api/messages', restify.serveStatic({
+	'directory': '.',
+	'default': 'abcd.html'
+}));
+// connector.listen());
 
 // Serve a static web page
 server.get('/', restify.serveStatic({
