@@ -26,7 +26,7 @@ server.post('/api/messages', connector.listen());
 // Serve a static web page
 server.get('/', restify.serveStatic({
 	'directory': '.',
-	'default': 'abcd.html'
+	'default': 'chat.html'
 }));
 
 server.get('/home',function(req,res,nxt) {
