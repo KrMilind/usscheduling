@@ -23,6 +23,7 @@ bot.on('conversationUpdate', function (message,session) {
 bot.dialog('/next',[
     function(session,args,next) {
         session.userData.accept = 0;
+        session.privateConversationData.accept = 5;
         builder.Prompts.text(session,'hello this is prompts');
         next();
     },
@@ -33,7 +34,7 @@ bot.dialog('/next',[
 ]);
 bot.dialog('/', function (session) {
     //respond with user's message
-    session.send("You "+session.userData.accept+" this " + session.message.text);
+    session.send("You "+session.userData.accept+" "+session.privateConversationData.accept+" this " + session.message.text);
 });
 
 // Setup Restify Server
