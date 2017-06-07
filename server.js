@@ -21,16 +21,19 @@ bot.on('conversationUpdate', function (message,session) {
     }
 });
 bot.dialog('/next',[
-    function(session) {
+    function(session,args,next) {
+        session.userData.accept = 0;
         builder.Prompts.text(session,'hello this is prompts');
+        next();
     },
     function(session) {
         session.send('you entered '+session.message.text);
+        session.endDialog();
     }
 ]);
 bot.dialog('/', function (session) {
     //respond with user's message
-    session.send("You said this " + session.message.text);
+    session.send("You "+session.userData.accept+" this " + session.message.text);
 });
 
 // Setup Restify Server
