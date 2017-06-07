@@ -10,9 +10,25 @@ var botConnectorOptions = {
 // Create bot
 var connector = new builder.ChatConnector(botConnectorOptions);
 var bot = new builder.UniversalBot(connector);
-
+bot.on('conversationUpdate', function (message,session) {
+    if (message.membersAdded) {
+        message.membersAdded.forEach(function (identity) {
+            if (identity.id === message.address.bot.id) {
+                bot.beginDialog(message.address,'/next');
+		
+            }
+        });
+    }
+});
+bot.dialog('/next',[
+    function(session) {
+        builder.Prompts.text(session,'hello this is prompts');
+    },
+    function(session) {
+        session.send('you entered '+session.message.text);
+    }
+]);
 bot.dialog('/', function (session) {
-    
     //respond with user's message
     session.send("You said this " + session.message.text);
 });
