@@ -10,7 +10,6 @@ var builder = require('botbuilder');
 var passport = require('passport');
 var OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
 var expressSession = require('express-session');
-var crypto = require('crypto');
 var querystring = require('querystring');
 var https = require('https');
 var request = require('request');
@@ -108,8 +107,7 @@ server.get('/api/OAuthCallback/',
     console.log('OAuthCallback');
     console.log(req);
     var address = JSON.parse(req.query.state);
-    var magicCode = crypto.randomBytes(4).toString('hex');
-    var messageData = { magicCode: magicCode, accessToken: req.user.accessToken, refreshToken: req.user.refreshToken, userId: address.user.id, name: req.user.displayName, email: req.user.preferred_username };
+    var messageData = { accessToken: req.user.accessToken, refreshToken: req.user.refreshToken, userId: address.user.id, name: req.user.displayName, email: req.user.preferred_username };
     
     var continueMsg = new builder.Message().address(address).text(JSON.stringify(messageData));
     console.log(continueMsg.toMessage());
@@ -268,7 +266,7 @@ bot.dialog('/next',[
         
     },function(session,results,next) {
         var loginData = JSON.parse(session.message.text);
-        if (loginData && loginData.magicCode && loginData.accessToken) {
+        if (loginData && loginData.refreshToken && loginData.accessToken) {
           session.userData.userName = loginData.name;
           session.userData.accessToken = loginData.accessToken;
           session.userData.refreshToken = loginData.refreshToken;
@@ -316,6 +314,13 @@ bot.dialog('/',[
     session.endConversation("You have logged out. Goodbye.");
   });
 }
+}).triggerAction({
+  matches : /^APPINFO$/,
+  onSelectAction : (session,args,next) => {
+    session.send("session.userData.userName = "+session.userData.userName+
+    "session.userData.accessToken = "+session.userData.accessToken+
+    "session.userData.refreshToken = "+session.userData.refreshToken);
+  }
 });
 // endConversationAction(function(session) {
 //   session.send("dialog ended");
