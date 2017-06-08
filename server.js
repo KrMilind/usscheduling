@@ -1,6 +1,6 @@
-'use strict';
+
 // CATALYST CODE
-require('dotenv').load();
+//require('dotenv').load();
 var accept=0,flag=0;
 //========================================================
 // DEFINITIONS
