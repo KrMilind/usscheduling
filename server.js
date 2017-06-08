@@ -1,6 +1,6 @@
 
 // CATALYST CODE
-//require('dotenv').load();
+require('dotenv').load();
 var accept=0,flag=0;
 //========================================================
 // DEFINITIONS
@@ -30,7 +30,6 @@ var AZUREAD_APP_PASSWORD = process.env.AZUREAD_APP_PASSWORD;
 var AZUREAD_APP_REALM = process.env.AZUREAD_APP_REALM;
 var AUTHBOT_CALLBACKHOST = process.env.AUTHBOT_CALLBACKHOST;
 var AUTHBOT_STRATEGY = process.env.AUTHBOT_STRATEGY;
-var LOGIN_CALLBACKHOST = process.env.LOGIN_CALLBACKHOST;
 
 //=========================================================
 // SERVICE Setup
@@ -144,8 +143,8 @@ passport.deserializeUser(function(id, done) {
 
 // Use the v1 endpoint (applications configured by manage.windowsazure.com)
 // This works against Azure AD
-let oidStrategyv1 = {
-  redirectUrl: LOGIN_CALLBACKHOST +'/api/OAuthCallback',
+var oidStrategyv1 = {
+  redirectUrl: AUTHBOT_CALLBACKHOST +'/api/OAuthCallback',
   allowHttpForRedirectUrl: true,
   realm: AZUREAD_APP_REALM,
   clientID: AZUREAD_APP_ID,
@@ -246,7 +245,7 @@ bot.dialog('/next',[
             accept = 1;
             var address = session.message.address;
             // TODO: Encrypt the address string
-            var link = LOGIN_CALLBACKHOST + '/login?address=' + querystring.escape(JSON.stringify(address));
+            var link = AUTHBOT_CALLBACKHOST + '/login?address=' + querystring.escape(JSON.stringify(address));
 
             var msg = new builder.Message(session)
             .attachments([
