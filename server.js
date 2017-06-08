@@ -104,6 +104,7 @@ server.get('/login', function (req, res, next) {
 server.get('/api/OAuthCallback/',
   passport.authenticate('azuread-openidconnect', { failureRedirect: '/login' }),
   (req, res) => {
+    res.send('Sending resource to bot....');
     console.log('OAuthCallback');
     console.log(req);
     var address = JSON.parse(req.query.state);
@@ -124,6 +125,10 @@ server.get('/logout', function(req, res){
     req.logOut();
     res.redirect("https://login.microsoftonline.com/common/oauth2/logout");
   });
+});
+
+server.get('/home',function(req,res,nxt) {
+
 });
 
 //==================================
@@ -244,7 +249,6 @@ bot.dialog('/next',[
             var address = session.message.address;
             // TODO: Encrypt the address string
             var link = AUTHBOT_CALLBACKHOST + '/login?address=' + querystring.escape(JSON.stringify(address));
-
             var msg = new builder.Message(session)
             .attachments([
               new builder.SigninCard(session)
