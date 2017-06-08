@@ -5,32 +5,32 @@ var accept=0,flag=0;
 //========================================================
 // DEFINITIONS
 //========================================================
-const restify = require('restify');
-const builder = require('botbuilder');
-const passport = require('passport');
-const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
-const expressSession = require('express-session');
-const crypto = require('crypto');
-const querystring = require('querystring');
-const https = require('https');
-const request = require('request');
-const cognitiveservices = require('botbuilder-cognitiveservices');
-const config = require('./language_en.json');
-const telemetryModule = require('./telemetry-module.js');
-const appInsights = require('applicationinsights');
-const path = require('path');
+var restify = require('restify');
+var builder = require('botbuilder');
+var passport = require('passport');
+var OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
+var expressSession = require('express-session');
+var crypto = require('crypto');
+var querystring = require('querystring');
+var https = require('https');
+var request = require('request');
+var cognitiveservices = require('botbuilder-cognitiveservices');
+var config = require('./language_en.json');
+var telemetryModule = require('./telemetry-module.js');
+var appInsights = require('applicationinsights');
+var path = require('path');
 
 //bot application identity
-const MICROSOFT_APP_ID = process.env.MICROSOFT_APP_ID;
-const MICROSOFT_APP_PASSWORD = process.env.MICROSOFT_APP_PASSWORD;
-const APPINSIGHTS_INSTRUMENTATION_KEY = process.env.APPINSIGHTS_INSTRUMENTATION_KEY;
+var MICROSOFT_APP_ID = process.env.MICROSOFT_APP_ID;
+var MICROSOFT_APP_PASSWORD = process.env.MICROSOFT_APP_PASSWORD;
+var APPINSIGHTS_INSTRUMENTATION_KEY = process.env.APPINSIGHTS_INSTRUMENTATION_KEY;
 //oauth details
-const AZUREAD_APP_ID = process.env.AZUREAD_APP_ID;
-const AZUREAD_APP_PASSWORD = process.env.AZUREAD_APP_PASSWORD;
-const AZUREAD_APP_REALM = process.env.AZUREAD_APP_REALM;
-const AUTHBOT_CALLBACKHOST = process.env.AUTHBOT_CALLBACKHOST;
-const AUTHBOT_STRATEGY = process.env.AUTHBOT_STRATEGY;
-const LOGIN_CALLBACKHOST = process.env.LOGIN_CALLBACKHOST;
+var AZUREAD_APP_ID = process.env.AZUREAD_APP_ID;
+var AZUREAD_APP_PASSWORD = process.env.AZUREAD_APP_PASSWORD;
+var AZUREAD_APP_REALM = process.env.AZUREAD_APP_REALM;
+var AUTHBOT_CALLBACKHOST = process.env.AUTHBOT_CALLBACKHOST;
+var AUTHBOT_STRATEGY = process.env.AUTHBOT_STRATEGY;
+var LOGIN_CALLBACKHOST = process.env.LOGIN_CALLBACKHOST;
 
 //=========================================================
 // SERVICE Setup
@@ -108,9 +108,9 @@ server.get('/api/OAuthCallback/',
   (req, res) => {
     console.log('OAuthCallback');
     console.log(req);
-    const address = JSON.parse(req.query.state);
-    const magicCode = crypto.randomBytes(4).toString('hex');
-    const messageData = { magicCode: magicCode, accessToken: req.user.accessToken, refreshToken: req.user.refreshToken, userId: address.user.id, name: req.user.displayName, email: req.user.preferred_username };
+    var address = JSON.parse(req.query.state);
+    var magicCode = crypto.randomBytes(4).toString('hex');
+    var messageData = { magicCode: magicCode, accessToken: req.user.accessToken, refreshToken: req.user.refreshToken, userId: address.user.id, name: req.user.displayName, email: req.user.preferred_username };
     
     var continueMsg = new builder.Message().address(address).text(JSON.stringify(messageData));
     console.log(continueMsg.toMessage());
@@ -244,9 +244,9 @@ bot.dialog('/next',[
             var telemetry = telemetryModule.createTelemetry(session, { setDefault: false });    
             client.trackEvent("User accepted card", telemetry);
             accept = 1;
-            const address = session.message.address;
+            var address = session.message.address;
             // TODO: Encrypt the address string
-            const link = LOGIN_CALLBACKHOST + '/login?address=' + querystring.escape(JSON.stringify(address));
+            var link = LOGIN_CALLBACKHOST + '/login?address=' + querystring.escape(JSON.stringify(address));
 
             var msg = new builder.Message(session)
             .attachments([
