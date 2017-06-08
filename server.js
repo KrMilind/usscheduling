@@ -128,7 +128,7 @@ server.get('/logout', function(req, res){
 });
 
 server.get('/home',function(req,res,nxt) {
-
+  res.send("endpoint home");
 });
 
 //==================================
