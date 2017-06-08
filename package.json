@@ -18,7 +18,16 @@
   },
   "homepage": "https://github.com/Jake1996/usscheduling#readme",
   "dependencies": {
+    "applicationinsights": "^0.20.1",
     "botbuilder": "^3.8.4",
+    "botbuilder-cognitiveservices": "^1.1.0",
+    "dotenv": "^4.0.0",
+    "express-session": "^1.15.3",
+    "passport": "^0.3.2",
+    "passport-azure-ad": "^3.0.6",
+    "path": "^0.12.7",
+    "querystring": "^0.2.0",
+    "request": "^2.76.0",
     "restify": "^4.3.0"
   }
 }

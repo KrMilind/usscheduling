@@ -1,0 +1,11 @@
+﻿{
+  "EmpType":"Great, let’s get started. To get you the right answers, I’ll need to know a little about you. Which of these describes your role at Walmart?",
+  "Endsession":"session ended.",
+  "diffQuery":"I don’t know the right answer – but I know someone who can help. Please call our support team at 800-421-1362 to get the answers you need.",
+  "welcomemessage":"Welcome to chat! This is new so you’re one of the first to use this tool! It’s a work in progress. We’ll keep enhancing it so it gets better every time you visit.",
+  "secure":"One more thing before we start. Let’s make sure we keep your private information safe. Please confirm that you will not share things like your medical diagnosis, social security number, etc.",
+  "got_it":"got it",
+  "private_info":"I will not share private information",
+  "Welcome_accept":"got it",
+  "btnWelcome":"Welcome to chat! This is new so you’re one of the first to use this tool! It’s a work in progress. We’ll keep enhancing it so it gets better every time you visit."
+}
