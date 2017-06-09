@@ -1,7 +1,6 @@
 
 // CATALYST CODE
 require('dotenv').load();
-
 //========================================================
 // DEFINITIONS
 //========================================================
@@ -70,16 +69,20 @@ server.listen(process.env.port || process.env.PORT || 3979, function () {
 });
   
 server.use(restify.queryParser());
-server.use(restify.bodyParser());
+server.use(restify.bodyParser({
+    mapParams: false
+}));
+server.use(restify.acceptParser(server.acceptable));
 server.use(expressSession({ secret: 'keyboard cat', resave: true, saveUninitialized: false }));
 server.use(passport.initialize());
+server.use(passport.session());
 
 server.post('/api/messages', connector.listen());
 server.get('/login', function (req, res, next) {
   console.log('login endpoit');
   passport.authenticate('azuread-openidconnect', {
-     failureRedirect: '/login', 
-     customState: req.query.address,
+      failureRedirect: '/login', 
+      customState: req.query.address,
       resourceURL: process.env.MICROSOFT_RESOURCE 
     }, function (err, user, info) {
     console.log('login');
@@ -99,24 +102,24 @@ server.get('/login', function (req, res, next) {
     });
   })(req, res, next);
 });
-
-server.get('/api/OAuthCallback/',
-  passport.authenticate('azuread-openidconnect', { failureRedirect: '/login' }),
-  (req, res) => {
-    res.send('Sending resource to bot....');
-    console.log('OAuthCallback');
-    console.log(req);
-    var address = JSON.parse(req.query.state);
-    var messageData = { accessToken: req.user.accessToken, refreshToken: req.user.refreshToken, userId: address.user.id, name: req.user.displayName, email: req.user.preferred_username };
-    
-    var continueMsg = new builder.Message().address(address).text(JSON.stringify(messageData));
-    console.log(continueMsg.toMessage());
-
-    bot.receive(continueMsg.toMessage());
-//    res.send('Welcome ' + req.user.displayName + '! Please copy this number and paste it back to your chat so your authentication can complete: ' + magicCode);
-      res.send('Return to bot');
-
+server.get('/home',function(req,res,next) {
+  res.send(store);
 });
+server.post('/api/OAuthCallback/',function(req,res,next) {
+  var address = res.req.body.state;
+  address = address.substring(address.indexOf('{'));
+  address = JSON.parse(address);
+  passport.authenticate('azuread-openidconnect', {
+     failureRedirect: '/login'},function(req,res,nxt) {
+      var user = res;
+      var messageData = { accessToken: user.accessToken, refreshToken: user.refreshToken, userId: user.id, name: user.displayName, email: user.preferred_username };
+      //console.log(messageData);
+      var continueMsg = new builder.Message().address(address).text(JSON.stringify(messageData));
+      //console.log(continueMsg.toMessage());
+      bot.receive(continueMsg.toMessage());
+    })(req,res,next);
+    res.send('Return to bot');
+  });
 
 // 'logout' route, logout from passport, and destroy the session with AAD.
 server.get('/logout', function(req, res){
@@ -157,7 +160,7 @@ var oidStrategyv1 = {
   identityMetadata: 'https://login.microsoftonline.com/' + AZUREAD_APP_REALM + '/.well-known/openid-configuration',
   skipUserProfile: true,
   responseType: 'code id_token',
-  responseMode: 'query',
+  responseMode: 'form_post',
   passReqToCallback: true
 };
 
