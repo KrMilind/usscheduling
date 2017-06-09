@@ -182,7 +182,7 @@ passport.use(new OIDCStrategy(oidStrategyv1,
 
 
 bot.on('conversationUpdate', function (message,session) {
-//            session.userData.first = 0;
+//            session.privateConversationData.first = 0;
     if (message.membersAdded) {
         message.membersAdded.forEach(function (identity) {
             if (identity.id === message.address.bot.id) {
@@ -272,9 +272,9 @@ bot.dialog('/next',[
           var loginData = null;
         }
         if (loginData && loginData.refreshToken && loginData.accessToken) {
-          session.userData.userName = loginData.name;
-          session.userData.accessToken = loginData.accessToken;
-          session.userData.refreshToken = loginData.refreshToken;
+          session.privateConversationData.userName = loginData.name;
+          session.privateConversationData.accessToken = loginData.accessToken;
+          session.privateConversationData.refreshToken = loginData.refreshToken;
           session.endDialogWithResult({ response: true });
         } else {
           //-----------
@@ -285,7 +285,7 @@ bot.dialog('/next',[
           client.trackEvent("User rejected card", telemetry);
           session.endConversation(config.Endsession);
         }
-          session.send("Hi "+session.userData.userName+",what can I help you with?");
+          session.send("Hi "+session.privateConversationData.userName+",what can I help you with?");
           session.endDialog();
       }
 ]);
@@ -295,7 +295,7 @@ bot.dialog('/hrpmo',basicQnAMakerDialog);
 
 bot.dialog('/',[
     function(session) {
-    if(session.userData.accessToken&&session.userData.refreshToken) {
+    if(session.privateConversationData.accessToken&&session.privateConversationData.refreshToken) {
       //session.send("What can I help you with?");
       var telemetry = telemetryModule.createTelemetry(session, { setDefault: false });
       client.trackEvent("User asked question", telemetry);
