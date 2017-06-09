@@ -1,6 +1,7 @@
 
 // CATALYST CODE
 require('dotenv').load();
+
 //========================================================
 // DEFINITIONS
 //========================================================
@@ -181,7 +182,7 @@ passport.use(new OIDCStrategy(oidStrategyv1,
 
 
 bot.on('conversationUpdate', function (message,session) {
-//            session.privateConversationData.first = 0;
+//            session.userData.first = 0;
     if (message.membersAdded) {
         message.membersAdded.forEach(function (identity) {
             if (identity.id === message.address.bot.id) {
@@ -195,8 +196,7 @@ bot.on('conversationUpdate', function (message,session) {
 bot.dialog('/next',[
     function(session,args,next)
     {
-        session.privateConversationData.accept = 0;
-        flag = 0;
+
         var welcomeCard = new builder.HeroCard(session)
             .text(config.btnWelcome)
             .buttons([
@@ -216,7 +216,6 @@ bot.dialog('/next',[
     }]);
     bot.dialog('/confirmations',[
         function(session, results,next){
-          flag = 1;
           if(session.message.text.toLowerCase()==config.got_it) {
             var secureCard = new builder.HeroCard(session)
             .text(config.secure)
@@ -244,7 +243,6 @@ bot.dialog('/next',[
         if(session.message.text.toLowerCase()==config.private_info.toLowerCase()) {
             var telemetry = telemetryModule.createTelemetry(session, { setDefault: false });    
             client.trackEvent("User accepted card", telemetry);
-            session.privateConversationData.accept = 1;
             var address = session.message.address;
             // TODO: Encrypt the address string
             var link = AUTHBOT_CALLBACKHOST + '/login?address=' + querystring.escape(JSON.stringify(address));
@@ -268,11 +266,15 @@ bot.dialog('/next',[
         }
         
     },function(session,results,next) {
-        var loginData = JSON.parse(session.message.text);
+        try {
+          var loginData = JSON.parse(session.message.text);
+        }catch(e) {
+          var loginData = null;
+        }
         if (loginData && loginData.refreshToken && loginData.accessToken) {
-          session.privateConversationData.userName = loginData.name;
-          session.privateConversationData.accessToken = loginData.accessToken;
-          session.privateConversationData.refreshToken = loginData.refreshToken;
+          session.userData.userName = loginData.name;
+          session.userData.accessToken = loginData.accessToken;
+          session.userData.refreshToken = loginData.refreshToken;
           session.endDialogWithResult({ response: true });
         } else {
           //-----------
@@ -283,7 +285,7 @@ bot.dialog('/next',[
           client.trackEvent("User rejected card", telemetry);
           session.endConversation(config.Endsession);
         }
-          session.send("Hi "+session.privateConversationData.userName+",what can I help you with?");
+          session.send("Hi "+session.userData.userName+",what can I help you with?");
           session.endDialog();
       }
 ]);
@@ -293,8 +295,7 @@ bot.dialog('/hrpmo',basicQnAMakerDialog);
 
 bot.dialog('/',[
     function(session) {
-    //session.send(session.privateConversationData.accept+"  "+flag);
-    if(session.privateConversationData.accessToken&&session.privateConversationData.refreshToken) {
+    if(session.userData.accessToken&&session.userData.refreshToken) {
       //session.send("What can I help you with?");
       var telemetry = telemetryModule.createTelemetry(session, { setDefault: false });
       client.trackEvent("User asked question", telemetry);
@@ -305,24 +306,6 @@ bot.dialog('/',[
 }]).triggerAction({
   matches : /^logout$/,
   onSelectAction : (session,args,next) => {
-    request.get('http://localhost:3979/logout').on('response',function (response) {
-    console.log(response);
-    session.privateConversationData.loginData = null;
-    session.privateConversationData.userName = null;
-    session.privateConversationData.accessToken = null;
-    session.privateConversationData.refreshToken = null;
     session.endConversation("You have logged out. Goodbye.");
-  });
-}
- });//.triggerAction({
-//   matches : /^APPINFO$/,
-//   onSelectAction : (session,args,next) => {
-//     session.send("session.privateConversationData.userName = "+session.privateConversationData.userName+
-//     "session.privateConversationData.accessToken = "+session.privateConversationData.accessToken+
-//     "session.privateConversationData.refreshToken = "+session.privateConversationData.refreshToken);
-//   }
-// });
-// endConversationAction(function(session) {
-//   session.send("dialog ended");
-// });	
-
+  }
+});
