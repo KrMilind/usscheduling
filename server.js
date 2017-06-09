@@ -102,9 +102,7 @@ server.get('/login', function (req, res, next) {
     });
   })(req, res, next);
 });
-server.get('/home',function(req,res,next) {
-  res.send(store);
-});
+
 server.post('/api/OAuthCallback/',function(req,res,next) {
   var address = res.req.body.state;
   address = address.substring(address.indexOf('{'));
@@ -113,9 +111,7 @@ server.post('/api/OAuthCallback/',function(req,res,next) {
      failureRedirect: '/login'},function(req,res,nxt) {
       var user = res;
       var messageData = { accessToken: user.accessToken, refreshToken: user.refreshToken, userId: user.id, name: user.displayName, email: user.preferred_username };
-      //console.log(messageData);
       var continueMsg = new builder.Message().address(address).text(JSON.stringify(messageData));
-      //console.log(continueMsg.toMessage());
       bot.receive(continueMsg.toMessage());
     })(req,res,next);
     res.send('Return to bot');
@@ -129,9 +125,6 @@ server.get('/logout', function(req, res){
   });
 });
 
-server.get('/home',function(req,res,nxt) {
-  res.send("endpoint home");
-});
 
 //==================================
 // AUTHENTICATION CODE
@@ -291,7 +284,6 @@ bot.dialog('/next',[
           session.endDialog();
       }
 ]);
-
 
 bot.dialog('/hrpmo',basicQnAMakerDialog);
 
