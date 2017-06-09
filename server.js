@@ -12,7 +12,6 @@ var OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
 var expressSession = require('express-session');
 var querystring = require('querystring');
 var https = require('https');
-var request = require('request');
 var cognitiveservices = require('botbuilder-cognitiveservices');
 var config = require('./language_en.json');
 var telemetryModule = require('./telemetry-module.js');
