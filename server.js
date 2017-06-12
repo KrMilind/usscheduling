@@ -104,6 +104,8 @@ server.get('/login', function (req, res, next) {
 });
 
 server.post('/api/OAuthCallback/',function(req,res,next) {
+  req.accepts('application/x-www-form-urlencoded');
+  console.log(res.req.body);
   var address = res.req.body.state;
   address = address.substring(address.indexOf('{'));
   address = JSON.parse(address);
@@ -115,6 +117,7 @@ server.post('/api/OAuthCallback/',function(req,res,next) {
       bot.receive(continueMsg.toMessage());
     })(req,res,next);
     res.send('Return to bot');
+    next(false);
   });
 
 // 'logout' route, logout from passport, and destroy the session with AAD.
